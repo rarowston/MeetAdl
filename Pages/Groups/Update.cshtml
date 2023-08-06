@@ -1,0 +1,23 @@
+﻿@page
+@using MeetAdl.Models;
+@model UpdateModel
+@{
+    ViewData["Title"] = "Update Group Information";
+}
+
+<h1>
+    Update Group in @Model.GroupName
+</h1>
+<form method="post">
+    <span asp-validation-for="GroupName" class="text-danger"></span>
+    <label asp-for="GroupName" class="control-label">Group Name:</label>
+    <input asp-for="GroupName" class="form-control" />
+    <span asp-validation-for="GroupDescription" class="text-danger"></span>
+    <label asp-for="GroupDescription" class="control-label">Group Description:</label>
+    <input asp-for="GroupDescription" class="form-control" />
+    <input type="hidden" asp-for="GroupId" class="form-control" />
+    <div class="d-flex flex-row">
+        <a class="btn btn-danger p-2 m-2" asp-page="./Details" asp-route-groupId="@Model.GroupId">Cancel</a>
+        <input type="submit" asp-route-groupId="@Model.GroupId" value="Apply Update" class="btn btn-primary p-2 m-2" />
+    </div>
+</form>

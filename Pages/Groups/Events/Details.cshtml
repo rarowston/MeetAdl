@@ -1,0 +1,52 @@
+﻿@page
+@using MeetAdl.Models;
+@model MeetAdl.Pages.Groups.Events.DetailsModel
+@{
+    ViewData["Title"] = Model.EventDetails?.Name;
+}
+
+
+<div class="d-flex flex-row mb-4">
+    <h1 class="px-4 my-1">
+        @Model.EventDetails?.Name
+    </h1>
+    <a class="btn btn-primary mx-1 my-2" asp-page="./Update" asp-route-groupId="@Model.EventDetails?.GroupId" asp-route-eventId="@Model.EventDetails?.Id">
+        <i class="bi bi-pen"></i>
+    </a>
+    @* Add options for attend, or update rsvp etc.. *@
+    <a class="btn btn-success my-2" name="Attend" asp-page="Join" asp-route-groupId="@Model.EventDetails?.GroupId">
+        <i class="bi bi-calendar-check"></i> Attend Event
+    </a>
+</div>
+<div class="d-flex flex-row">
+    <div class="d-flex flex-column w-50 mw-20">
+        <div class="p-2 m-2">
+            @if (Model.EventDetails?.Description != null)
+            {
+                <h2>Details</h2>
+                <p>@Model.EventDetails.Description</p>
+            }
+            <h2> Location </h2>
+            <p>@Model.EventDetails?.Location</p>
+            <h2> Date </h2>
+            <p>@Model.EventDetails?.DateTimeAt</p>
+        </div>
+    </div>
+    <div class="card p-2 m-2 w-50 mw-10">
+        @{
+            string attendeeCountText = "";
+            if (Model.EventDetails?.UserEvents != null)
+            {
+                attendeeCountText = "(" + Model.EventDetails.UserEvents.Count + ")";
+            }
+        }
+        <h2>Atttendees @attendeeCountText</h2>
+        @if (Model.EventDetails?.UserEvents != null)
+        {
+            @foreach (UserEvent userEvent in Model.EventDetails.UserEvents)
+            {
+                <p>@userEvent.User?.DisplayName</p>
+            }
+        }
+    </div>
+</div>

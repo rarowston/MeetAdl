@@ -1,0 +1,47 @@
+﻿@page
+@using MeetAdl.Models;
+@model MeetAdl.Pages.Groups.Events.CreateModel
+@{
+    ViewData["Title"] = "Create an Event - " + Model.GroupSummary?.Name;
+}
+
+<h1>
+    Create a new event for @Model.GroupSummary?.Name
+</h1>
+<form method="post">
+    <div>
+        <span asp-validation-for="EventName" class="text-danger"></span>
+        <label asp-for="EventName" class="control-label">Event Name:</label>
+        <input asp-for="EventName" class="form-control" />
+    </div>
+    <div>
+        <span asp-validation-for="EventDescription" class="text-danger"></span>
+        <label asp-for="EventDescription" class="control-label">Event Description:</label>
+        <input asp-for="EventDescription" class="form-control" />
+    </div>
+    <div>
+        <span asp-validation-for="EventLocation" class="text-danger"></span>
+        <label asp-for="EventLocation" class="control-label">Location:</label>
+        <input asp-for="EventLocation" class="form-control" />
+    </div>
+    <div>
+        <span id="txtSelectedDate" asp-validation-for="EventDate" class="text-danger"></span>
+        <label asp-for="EventDate" class="control-label">Date:</label>
+        <input asp-for="EventDate" class="form-control" />
+    </div>
+    <div class="d-flex flex-row">
+        <a class="btn btn-danger p-2 m-2" asp-page="../Details" asp-route-groupId="@Model.GroupSummary?.Id">Cancel</a>
+        <input type="submit" value="Create Event" asp-route-groupId="@Model.GroupSummary?.Id" class="btn btn-primary p-2 m-2" />
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(function () {
+        $('#txtSelectedDate').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            format: "dd/mm/yyyy",
+            language: "tr"
+        });
+    });
+</script>

@@ -1,0 +1,15 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Meet Adelaide</h1>
+    <div class="">
+        <a class="btn btn-primary p-2 mx-4" asp-page="./Groups/Index">See all groups</a>
+        <a class="btn btn-success p-2 mx-4" asp-page="./Groups/Create">
+            <i class="bi bi-stars"></i> Create Your own Group
+        </a>
+    </div>
+</div>

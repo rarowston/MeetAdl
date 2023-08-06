@@ -1,0 +1,19 @@
+﻿@page
+@using MeetAdl.Models;
+@model CreateModel
+@{
+    ViewData["Title"] = "Make a Post :o";
+}
+
+<h1>
+    Make a post for @Model.GroupDetails?.Name
+</h1>
+<form method="post">
+    <span asp-validation-for="PostContent" class="text-danger"></span>
+    <label asp-for="PostContent" class="control-label">Message:</label>
+    <input asp-for="PostContent" class="form-control" />
+    <div class="d-flex flex-row">
+        <a class="btn btn-danger p-2 m-2" asp-page="../Details" asp-route-groupId="@Model.GroupDetails?.Id">Cancel</a>
+        <input type="submit" value="Publish" asp-route-groupId="@Model.GroupDetails?.Id" class="btn btn-primary p-2 m-2" />
+    </div>
+</form>

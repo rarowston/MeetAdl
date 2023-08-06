@@ -1,0 +1,39 @@
+﻿@page
+@using MeetAdl.Models;
+@model MeetAdl.Pages.Groups.Events.UpdateModel
+@{
+    ViewData["Title"] = Model.EventDetails?.Name;
+}
+
+
+<h1 class="px-4 my-1">
+    Update Event Details
+</h1>
+<form method="post">
+    <input type="hidden" asp-for="GroupId" class="form-control" />
+    <input type="hidden" asp-for="EventId" class="form-control" />
+    <div>
+        <span asp-validation-for="EventName" class="text-danger"></span>
+        <label asp-for="EventName" class="control-label">Event Name:</label>
+        <input asp-for="EventName" class="form-control" />
+    </div>
+    <div>
+        <span asp-validation-for="EventDescription" class="text-danger"></span>
+        <label asp-for="EventDescription" class="control-label">Event Description:</label>
+        <input asp-for="EventDescription" class="form-control" />
+    </div>
+    <div>
+        <span asp-validation-for="EventLocation" class="text-danger"></span>
+        <label asp-for="EventLocation" class="control-label">Location:</label>
+        <input asp-for="EventLocation" class="form-control" />
+    </div>
+    <div>
+        <span id="txtSelectedDate" asp-validation-for="EventDate" class="text-danger"></span>
+        <label asp-for="EventDate" class="control-label">Date:</label>
+        <input asp-for="EventDate" class="form-control" />
+    </div>
+    <div class="d-flex flex-row">
+        <a class="btn btn-danger p-2 m-2" asp-page="./Details" asp-route-groupId="@Model.GroupId" asp-route-eventId="@Model.EventId">Cancel</a>
+        <input type="submit" value="Update Event" asp-route-groupId="@Model.GroupId" asp-route-eventId="@Model.EventId" class="btn btn-primary p-2 m-2" />
+    </div>
+</form>

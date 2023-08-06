@@ -1,0 +1,24 @@
+﻿@page
+@using MeetAdl.Models;
+@model MeetAdl.Pages.Groups.CreateModel
+@{
+    ViewData["Title"] = "Create a Group";
+}
+    <h1 class="my-1">Create a Meetup Group</h1>
+    
+<form method="post">
+    <div>
+        <span asp-validation-for="GroupName" class="text-danger"></span>
+        <label asp-for="GroupName" class="control-label">Group Name:</label>
+        <input asp-for="GroupName" class="form-control" />
+    </div>
+    <div>
+        <span asp-validation-for="GroupDescription" class="text-danger"></span>
+        <label asp-for="GroupDescription" class="control-label">Group Description:</label>
+        <textarea asp-for="GroupDescription" class="form-control"></textarea>
+    </div>
+    <div class="d-flex flex-row">
+        <a class="btn btn-danger p-2 m-2" asp-page="./Index">Cancel</a>
+        <input type="submit" value="Create" class="btn btn-primary p-2 m-2" />
+    </div>
+</form>

@@ -1,0 +1,36 @@
+﻿@page
+@using MeetAdl.Models;
+@model MeetAdl.Pages.Groups.IndexModel
+@{
+    ViewData["Title"] = "Groups";
+}
+<div class="d-flex flex-row flex-wrap mb-2">
+    <h2 class="my-1">MeetAdl Groups</h2>
+    <a class="btn btn-primary p-2 mx-4" asp-page="./Create">
+        <i class="bi bi-plus"></i> Create Group
+    </a>
+</div>
+@if (Model.Groups != null && Model.Groups.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Group group in Model.Groups)
+            {
+                <tr>
+                    <td>
+                        <a asp-page="./Details" asp-route-groupId="@group.Id">@group.Name</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No Groups found :(</p>
+}
