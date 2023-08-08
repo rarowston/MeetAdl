@@ -1,14 +1,23 @@
 ﻿@using System.Security.Principal
-
+@using MeetAdl.Models;
+@using MeetAdl.Security;
+@inject ICurrentIdentityService currentIdentityService;
 <ul class="navbar-nav">
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
+    User? user = await currentIdentityService.GetCurrentUserInformationAsync();
+    if(user != null)
+    {
         <li>
-            <a class="nav-link text-dark" asp-page="/Profiles/Profile">View Profile</a>
+            <p class="nav-link text-dark">Hello @user.DisplayName</p>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
-        </li>
+    }
+    <li>
+        <a class="nav-link text-dark" asp-page="/Profiles/Profile">View Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+    </li>
 }
 else
 {
