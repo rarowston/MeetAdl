@@ -14,10 +14,23 @@
     <a class="btn btn-primary mx-1 my-2" asp-page="./Update" asp-route-groupId="@Model.GroupDetails.Id">
         <i class="bi bi-pen"></i>
     </a>
+
     @* Switch between join or leave group. *@
-    <a class="btn btn-success my-2" name="Join Group" asp-page="Join" asp-route-groupId="@Model.GroupDetails.Id">
-        <i class="bi bi-person-plus-fill"></i> Join Group
-    </a>
+    @if (Model.UserIsAlreadyMember)
+    {
+        <form method="post">
+            <button class="btn btn-danger mx-1 my-2" asp-page-handler="LeaveGroup" asp-route-groupId="@Model.GroupDetails.Id" onclick="return confirm('Are you sure that you want to leave this group?')">
+                <i class="bi bi-person-fill-dash"></i> Leave Group
+            </button>
+        </form>
+    }
+    else
+    {
+        <a class="btn btn-success my-2" name="Join Group" asp-page="Join" asp-route-groupId="@Model.GroupDetails.Id">
+            <i class="bi bi-person-fill-add"></i> Join Group
+        </a>
+    }
+
 </div>
 <div class="px-4 my-1">
     <p>@Model.GroupDetails.Description</p>
@@ -117,7 +130,7 @@
                                 <p class="fw-bold">@member.User.DisplayName</p>
                                 @if (!string.IsNullOrWhiteSpace(member.JoiningComments))
                                 {
-                                    <p>I joined Because:</p>
+                                    <span>I joined because:</span>
                                     <p class="small">@member.JoiningComments</p>
                                 }
                             </div>

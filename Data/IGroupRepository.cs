@@ -6,7 +6,8 @@ public interface IGroupRepository
 {
     public Task<Group?> GetGroupSummaryAsync(long id);
     public Task<Group?> GetGroupDetailsAsync(long id);
-    public Task<Group?> AddUserToGroupAsync(long groupId, long userId, string? JoinMessage);
+    public Task<GroupMember?> GetGroupMemberAsync(long groupId, long userId);
+    public Task<Group?> AddOrUpdateUserMembershipForGroupAsync(long groupId, long userId, string? JoinMessage);
     public Task<List<Group>> ListAllGroupsAsync();
     public Task<List<Group>> ListGroupsForUserAsync(long userId);
 

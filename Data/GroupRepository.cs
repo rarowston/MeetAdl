@@ -12,27 +12,6 @@ public class GroupRepository : IGroupRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Group?> AddUserToGroupAsync(long groupId, long userId, string? joinMessage)
-    {
-        Group? group = await _dbContext.Groups
-            .Include(group => group.UserGroups)
-            .Where(group => group.Id == groupId)
-            .FirstOrDefaultAsync();
-
-        if (group == null)
-        {
-            return null;
-        }
-        group.UserGroups.Add(new GroupMember
-        {
-            GroupId = groupId,
-            JoiningComments = joinMessage,
-            UserId = userId
-        });
-        await _dbContext.SaveChangesAsync();
-        return await GetGroupDetailsAsync(groupId);
-    }
-
     public async Task<Group?> GetGroupSummaryAsync(long id)
     {
         return await _dbContext.Groups
@@ -111,7 +90,7 @@ public class GroupRepository : IGroupRepository
         Group? group = await _dbContext.Groups
             .Where(group => group.Id == groupId)
             .FirstOrDefaultAsync();
-        if(group == null)
+        if (group == null)
         {
             return false;
         }
@@ -119,5 +98,49 @@ public class GroupRepository : IGroupRepository
         group.Description = groupDescription;
         await _dbContext.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<GroupMember?> GetGroupMemberAsync(long groupId, long userId)
+    {
+        return await _dbContext.GroupMembers
+            .AsNoTracking()
+            .Where(groupMember => groupMember.GroupId == groupId && groupMember.UserId == userId)
+            .FirstOrDefaultAsync();
+        throw new NotImplementedException();
+    }
+
+    public async Task<Group?> AddOrUpdateUserMembershipForGroupAsync(long groupId, long userId, string? joinMessage)
+    {
+        GroupMember? membership = await _dbContext.GroupMembers
+            .Where(groupMember => groupMember.GroupId == groupId && groupMember.UserId == userId)
+            .FirstOrDefaultAsync();
+
+        if (membership != null)
+        {
+            // Update exisitng details
+            membership.JoiningComments = joinMessage;
+        }
+        else
+        {
+            // Check if group exists and add user to it
+            Group? group = await _dbContext.Groups
+                .Include(group => group.UserGroups)
+                .Where(group => group.Id == groupId)
+                .FirstOrDefaultAsync();
+
+            if (group == null)
+            {
+                return null;
+            }
+            group.UserGroups.Add(new GroupMember
+            {
+                GroupId = groupId,
+                JoiningComments = joinMessage,
+                UserId = userId
+            });
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return await GetGroupSummaryAsync(groupId);
     }
 }

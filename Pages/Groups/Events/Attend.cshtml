@@ -1,0 +1,22 @@
+﻿@page
+@using MeetAdl.Models;
+@model MeetAdl.Pages.Groups.Events.AttendModel
+@{
+    ViewData["Title"] = Model.EventDetails?.Name;
+}
+
+
+<h1 class="px-4 my-1">
+    Attend @Model.EventDetails.Name
+</h1>
+<form method="post">
+    <div>
+        <span asp-validation-for="RsvpDetails" class="text-danger"></span>
+        <label asp-for="RsvpDetails" class="control-label">RSVP Message:</label>
+        <input asp-for="RsvpDetails" class="form-control" />
+    </div>
+    <div class="d-flex flex-row">
+        <a class="btn btn-danger p-2 m-2" asp-page="./Details" asp-route-groupId="@Model.EventDetails.GroupId" asp-route-eventId="@Model.EventDetails.Id">Cancel</a>
+        <input type="submit" value="Attend" asp-route-groupId="@Model.EventDetails.GroupId" asp-route-eventId="@Model.EventDetails.Id" class="btn btn-primary p-2 m-2" />
+    </div>
+</form>

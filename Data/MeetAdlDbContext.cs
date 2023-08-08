@@ -1,3 +1,4 @@
+using MeetAdl.Configuration;
 using MeetAdl.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,9 +6,11 @@ namespace MeetAdl.Data;
 
 public class MeetAdlDbContext : DbContext
 {
-    public MeetAdlDbContext()
-    {
+    private readonly DatabaseConfiguration dbconfig;
 
+    public MeetAdlDbContext(DatabaseConfiguration dbconfig)
+    {
+        this.dbconfig = dbconfig;
     }
 
     public DbSet<MeetUpEvent> Events { get; set; }
@@ -20,7 +23,7 @@ public class MeetAdlDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         // connect to sql server with connection string from app settings
-        options.UseSqlServer("Server=M-Prime-Ryan\\DEMONSTRATION;Database=MeetAdl;Trusted_Connection=True;Timeout=180;ConnectRetryCount=3;ConnectRetryInterval=10;TrustServerCertificate=True");
+        options.UseSqlServer(dbconfig.MeetAdlDatabase);
     }
 
 }

@@ -8,10 +8,23 @@
 <h1>
     @Model.Group.Name
 </h1>
-<form>
-    <h2>Join Group?</h2>
-    <label asp-for="JoinMessage" class="control-label">(optional) Why would you like to join this group?</label>
-    <input asp-for="JoinMessage" class="form-control" />
-    <span asp-validation-for="JoinMessage" class="text-danger"></span>
-    <input type="submit" asp-action="save" asp-route-id="@Model.Group.Id" value="Join" class="btn btn-primary p-2 m-2" />
+<form method="post">
+    @if (Model.UserIsAlreadyMember)
+    {
+        <h2>Update Group Join Message</h2>
+        <label asp-for="JoinMessage" class="control-label">(optional) Why have you joined this group?</label>
+        <input asp-for="JoinMessage" class="form-control" />
+        <span asp-validation-for="JoinMessage" class="text-danger"></span>
+        <a class="btn btn-danger p-2 m-2" asp-page="../Details" asp-route-groupId="@Model.Group.Id">Cancel</a>
+        <input type="submit" asp-route-groupId="@Model.Group.Id" value="Update" class="btn btn-primary p-2 m-2" />
+    }
+    else
+    {
+         <h2>Join Group</h2>
+        <label asp-for="JoinMessage" class="control-label">(optional) Why would you like to join this group?</label>
+        <input asp-for="JoinMessage" class="form-control" />
+        <span asp-validation-for="JoinMessage" class="text-danger"></span>
+        <a class="btn btn-danger p-2 m-2" asp-page="../Details" asp-route-groupId="@Model.Group.Id">Cancel</a>
+        <input type="submit" asp-route-groupId="@Model.Group.Id" value="Join" class="btn btn-primary p-2 m-2" />
+    }
 </form>
