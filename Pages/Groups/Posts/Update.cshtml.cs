@@ -47,7 +47,7 @@ namespace MeetAdl.Pages.Groups.Posts
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync([FromQuery] long groupId, [FromQuery] long postId)
+        public async Task<IActionResult> OnPostAsync([FromQuery] long groupId, [FromQuery] long? postId)
         {
             GroupDetails = await groupRepository.GetGroupDetailsAsync(groupId);
             if (GroupDetails == null)
@@ -55,15 +55,14 @@ namespace MeetAdl.Pages.Groups.Posts
                 return NotFound();
             }
 
-            if (PostContent == null)
-            {
-                PostDetails = await postRepository.GetPostForGroupAsync(groupId, postId);
-                return Page();
-            }
-
             if (postId != null && postId != 0)
             {
-                PostDetails = await postRepository.UpdatePostContentForGroupAsync(groupId, postId, PostContent);
+                if (PostContent == null)
+                {
+                    PostDetails = await postRepository.GetPostForGroupAsync(groupId, postId.Value);
+                    return Page();
+                }
+                PostDetails = await postRepository.UpdatePostContentForGroupAsync(groupId, postId.Value, PostContent);
             }
             else
             {

@@ -2,7 +2,7 @@
 @using MeetAdl.Models;
 @model MeetAdl.Pages.Groups.DetailsModel
 @{
-    ViewData["Title"] = "MeetAdl - " + Model.GroupDetails.Name;
+    ViewData["Title"] = "MeetAdl - " + Model.GroupDetails!.Name;
     string eventNameWidth = "w-75";
     string userNameWidth = "w-75";
 }
