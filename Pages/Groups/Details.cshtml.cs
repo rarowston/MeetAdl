@@ -4,6 +4,7 @@ using MeetAdl.Data;
 using MeetAdl.Models;
 using Microsoft.AspNetCore.Authorization;
 using MeetAdl.Security;
+using MeetAdl.Permissions;
 
 namespace MeetAdl.Pages.Groups;
 
@@ -49,12 +50,22 @@ public class DetailsModel : PageModel
 
     public async Task<IActionResult> OnPostDeletePostAsync([FromQuery] long groupId, [FromQuery] long postId)
     {
+        if (!await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.DeleteGroupPosts))
+        {
+            return Unauthorized();
+        }
+
         await postRepository.DeletePostFromGroupAsync(groupId, postId);
         return RedirectToPage("details", new { groupId = groupId });
     }
 
     public async Task<IActionResult> OnPostDeleteMemberAsync([FromQuery] long groupId, [FromQuery] long userId)
     {
+        if (!await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.EditGroupMembers))
+        {
+            return Unauthorized();
+        }
+
         await groupRepository.DeleteMemberFromGroupAsync(groupId, userId);
         return RedirectToPage("details", new { groupId = groupId });
     }

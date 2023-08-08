@@ -4,9 +4,11 @@ using MeetAdl.Data;
 using MeetAdl.Models;
 using System.ComponentModel.DataAnnotations;
 using MeetAdl.Security;
+using MeetAdl.Permissions;
 
 namespace MeetAdl.Pages.Groups.Posts
 {
+    [AuthorizeForGlobalPermissionLevel(PermissionLevel.CreateGroupPosts)]
     public class CreateModel : PageModel
     {
         private readonly IGroupRepository groupRepository;
