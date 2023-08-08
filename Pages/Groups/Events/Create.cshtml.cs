@@ -14,14 +14,14 @@ namespace MeetAdl.Pages.Groups.Events
         public Group? GroupSummary;
 
         [BindProperty]
-        [Required, MinLength(5)]
+        [Required, MinLength(2)]
         public string? EventName { get; set; }
 
         [BindProperty]
         public string? EventDescription { get; set; }
 
         [BindProperty]
-        [Required, MinLength(5)]
+        [Required, MinLength(2)]
         public string? EventLocation { get; set; }
 
         [BindProperty]
