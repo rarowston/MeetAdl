@@ -40,6 +40,19 @@ public class CurrentIdentityService : ICurrentIdentityService
         }
     }
 
+    public async Task<bool> CurrentUserHasPermissionLevelAsync(PermissionLevel permission)
+    {
+        User? user = await GetCurrentUserInformationAsync();
+        if (user?.PermissionLevel == null)
+        {
+            return false;
+        }
+        
+        return user.PermissionLevel.HasFlag(permission);
+
+        //ALT: return (permission & user.PermissionLevel) == permission;
+    }
+
     public async Task<User?> GetCurrentUserInformationAsync()
     {
         if (_user != null)

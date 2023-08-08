@@ -1,9 +1,22 @@
 ﻿@page
+@using MeetAdl.Pages.Profile;
+@using MeetAdl.Permissions;
+@using MeetAdl.Security;
 @model MeetAdl.Pages.Profile.ProfileModel
+@inject ICurrentIdentityService currentIdentityService;
+@{
+    bool disablePermissionRead = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.ReadUserPermissions);
+}
 @{
     ViewData["Title"] = "MeetAdl - Profile";
 }
 <h1>Profile</h1>
 
+<p>ID: @Model.ProfileDetails?.Id</p>
 <p>Name: @Model.ProfileDetails?.DisplayName</p>
 <p>Email: @Model.ProfileDetails?.Email</p>
+
+@if (!disablePermissionRead && Model.ProfileDetails != null)
+{
+    <a class="btn btn-primary" asp-page="Permissions" asp-route-userId="@Model.ProfileDetails.Id">Update Permissions</a>
+}

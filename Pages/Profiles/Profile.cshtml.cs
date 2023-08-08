@@ -29,19 +29,30 @@ public class ProfileModel : PageModel
     {
         if (User.Identity == null || !User.Identity.IsAuthenticated)
         {
-            return RedirectToPage("/Index");
+            return RedirectToPage("~/Index");
         }
 
         if (userId == null)
         {
             // Retrieve the information about the current user
             ProfileDetails = await currentIdentityService.GetCurrentUserInformationAsync();
+            PageForCurrentUser = true;
         }
         else
         {
-            // Retrieve the information about some other user. 
-            PageForCurrentUser = false;
+            // Retrieve the information about any user. 
             ProfileDetails = await userRepository.GetUserFromUserIdAsync(userId.Value);
+
+            // Check if it is still for the current user
+            if (currentIdentityService.ObjectId == (ProfileDetails?.ObjectId))
+            {
+                PageForCurrentUser = true;
+            }
+            else
+            {
+                PageForCurrentUser = false;
+            }
+
         }
 
         if (ProfileDetails == null)

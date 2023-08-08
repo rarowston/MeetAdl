@@ -1,4 +1,5 @@
 using MeetAdl.Models;
+using MeetAdl.Permissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetAdl.Data;
@@ -53,6 +54,20 @@ public class UserRepository : IUserRepository
             return false;
         }
         user.Email = email;
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> UpdateUserPermissionsAsync(long userId, PermissionLevel permissionLevel)
+    {
+        User? user = await _dbContext.Users
+            .Where(user => user.Id == userId)
+            .FirstOrDefaultAsync();
+        if (user == null)
+        {
+            return false;
+        }
+        user.PermissionLevel = permissionLevel;
         await _dbContext.SaveChangesAsync();
         return true;
     }

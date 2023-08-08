@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using MeetAdl.Data;
 using MeetAdl.Models;
 using System.ComponentModel.DataAnnotations;
+using MeetAdl.Security;
 
 namespace MeetAdl.Pages.Groups.Posts
 {
@@ -10,6 +11,7 @@ namespace MeetAdl.Pages.Groups.Posts
     {
         private readonly IGroupRepository groupRepository;
         private readonly IPostRepository postRepository;
+        private readonly ICurrentIdentityService currentIdentityService;
 
         public Group? GroupDetails;
 
@@ -17,10 +19,11 @@ namespace MeetAdl.Pages.Groups.Posts
         [Required, MinLength(5)]
         public string? PostContent { get; set; }
 
-        public CreateModel(IGroupRepository groupRepository, IPostRepository postRepository)
+        public CreateModel(IGroupRepository groupRepository, IPostRepository postRepository, ICurrentIdentityService currentIdentityService)
         {
             this.groupRepository = groupRepository;
             this.postRepository = postRepository;
+            this.currentIdentityService = currentIdentityService;
         }
 
         public async Task<IActionResult> OnGetAsync([FromQuery] long groupId)
@@ -47,8 +50,14 @@ namespace MeetAdl.Pages.Groups.Posts
             {
                 return NotFound();
             }
-            
-            await postRepository.AddPostForGroupAsync(groupId, 2, PostContent);
+
+            User? u = await currentIdentityService.GetCurrentUserInformationAsync();
+            if (u == null)
+            {
+                return Unauthorized();
+            }
+
+            await postRepository.AddPostForGroupAsync(groupId, u.Id, PostContent);
             
             // Send back to detail page
             return RedirectToPage("../details", new { groupId = groupId });
