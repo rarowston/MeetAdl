@@ -1,4 +1,5 @@
 using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
@@ -24,18 +25,38 @@ public class PermissionPolicyProvider : DefaultAuthorizationPolicyProvider
             // If for whatever reason it is not successful, apply the highest level policy by default. 
             policy = GetAdminPolicy();
 
+            // Split out the parts of a policy to apply. These are separated by commas.
+            string[] policies = policyName.Split(',');
+
             // Check that there is a policy, which should be the global permission level
-            if (policyName.Length != 0 && !string.IsNullOrEmpty(policyName))
+            if (policies.Length != 0 && !string.IsNullOrEmpty(policies[0]))
             {
                 // Convert the policy name back to a role requirement
-                bool globalPermissionRequirementSuccess = Enum.TryParse(policyName, out PermissionLevel adminPermissionLevel);
-                if (globalPermissionRequirementSuccess)
+                bool globalPermissionRequirementConversionSuccess = Enum.TryParse(policies[0], out PermissionLevel adminPermissionLevel);
+                if (globalPermissionRequirementConversionSuccess)
                 {
                     // We have at least an admin permission requirement, so set the policy to that.
                     policy = new AuthorizationPolicyBuilder()
                         .RequireAuthenticatedUser()
                         .AddRequirements(new GlobalPermissionRequirement(adminPermissionLevel))
                         .Build();
+
+                    // Check that there is a second policy, which should be the object specific option (if any)
+                    if (policies.Length > 1 && !string.IsNullOrEmpty(policies[1]))
+                    {
+                        // There is a second Policy in the array - Check if it is a type that we can process
+                        switch (policies[1])
+                        {
+                            case PermissionConstants.GROUP_PERMISSIONS:
+                                // There is a campaign requirement, so set a campaign permission requirement
+                                policy = new AuthorizationPolicyBuilder()
+                                    .RequireAuthenticatedUser()
+                                    .AddRequirements(new GroupPermissionRequirement(adminPermissionLevel))
+                                    .Build();
+                                break;
+                        }
+
+                    }
                 }
             }
 

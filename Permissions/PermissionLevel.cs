@@ -1,6 +1,6 @@
 namespace MeetAdl.Permissions;
 
-public enum PermissionLevel : long // Ensure that the enum is 64 bits by making it a long - cannot use ulong as db does not support it. 
+public enum PermissionLevel : long // Ensure that the enum is 64 bits by making it a long. 
 {
     Authenticated = 0, // No elevated access - any authenticated user. Value: 0
 

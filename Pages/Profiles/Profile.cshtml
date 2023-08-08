@@ -1,8 +1,8 @@
 ﻿@page
-@using MeetAdl.Pages.Profile;
+@using MeetAdl.Pages.Profiles;
 @using MeetAdl.Permissions;
 @using MeetAdl.Security;
-@model MeetAdl.Pages.Profile.ProfileModel
+@model MeetAdl.Pages.Profiles.ProfileModel
 @inject ICurrentIdentityService currentIdentityService;
 @{
     bool disablePermissionRead = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.ReadUserPermissions);

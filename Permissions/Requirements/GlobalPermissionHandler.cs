@@ -1,6 +1,7 @@
+using MeetAdl.Security;
 using Microsoft.AspNetCore.Authorization;
 
-namespace MeetAdl.Security;
+namespace MeetAdl.Permissions.Requirements;
 public class GlobalPermissionHandler : AuthorizationHandler<GlobalPermissionRequirement>
 {
     private readonly ICurrentIdentityService _permissionsService;

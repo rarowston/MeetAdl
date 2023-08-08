@@ -5,6 +5,7 @@ using MeetAdl.Models;
 using System.ComponentModel.DataAnnotations;
 using MeetAdl.Security;
 using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 
 namespace MeetAdl.Pages.Groups.Posts
 {

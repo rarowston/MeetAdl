@@ -1,6 +1,6 @@
 using MeetAdl.Permissions;
 using Microsoft.AspNetCore.Authorization;
-namespace MeetAdl.Security;
+namespace MeetAdl.Permissions.Requirements;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeForGlobalPermissionLevel : AuthorizeAttribute

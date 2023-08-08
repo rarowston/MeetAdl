@@ -2,6 +2,7 @@
 using MeetAdl.Data;
 using MeetAdl.Models;
 using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 using MeetAdl.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace MeetAdl.Pages.Profiles;
-public class PermissionsModel : PageModel
+namespace MeetAdl.Pages.Groups;
+[AuthorizeForGroupAccess(PermissionLevel.ReadGroupMembers)]
+public class MembershipModel : PageModel
 {
     private readonly ICurrentIdentityService currentIdentityService;
     private readonly IUserRepository userRepository;
+    private readonly IGroupRepository groupRepository;
 
     /// <summary>
     /// The Permission Level represented by this edit model. On Set this will force set all of the selectors to match the provided permission level
@@ -32,43 +35,45 @@ public class PermissionsModel : PageModel
         }
     }
 
-    public User? ProfileDetails = new();
+    public User? ProfileDetails;
+    public Group? GroupDetails;
 
     public bool PageForCurrentUser { get; set; } = false;
 
     [BindProperty]
     public List<PermissionLevelSelector> RoleSelectors { get; set; }
 
-    [BindProperty]
-    public Dictionary<PermissionLevel, PermissionLevelSelector> PresetRoles { get; set; }
-
-    public PermissionsModel(ICurrentIdentityService currentIdentityService, IUserRepository userRepository)
+    public MembershipModel(ICurrentIdentityService currentIdentityService, IUserRepository userRepository, IGroupRepository groupRepository)
     {
         this.currentIdentityService = currentIdentityService;
         this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
     }
 
-    public async Task<IActionResult> OnGetAsync([FromQuery] long? userId)
+    public async Task<IActionResult> OnGetAsync([FromQuery] long? groupId, [FromQuery] long? userId)
     {
         if (User.Identity == null || !User.Identity.IsAuthenticated)
         {
             return RedirectToPage("~/Index");
         }
 
+        if (groupId == null)
+        {
+            return RedirectToPage("~/Index");
+        }
+
         if (userId == null)
         {
-            // Retrieve the information about the current user
-            ProfileDetails = await currentIdentityService.GetCurrentUserInformationAsync();
-            PageForCurrentUser = true;
-        }
-        else
-        {
-            // Retrieve the information about any user. 
-            ProfileDetails = await userRepository.GetUserFromUserIdAsync(userId.Value);
-
+            return RedirectToPage("Details", new { groupId = groupId });
         }
 
-        if (ProfileDetails == null)
+        // Retrieve the information about any user. 
+        ProfileDetails = await userRepository.GetUserFromUserIdAsync(userId.Value);
+        GroupDetails = await groupRepository.GetGroupSummaryAsync(groupId.Value);
+
+        GroupMember? groupMember = await userRepository.GetUserAccessToGroupAsync(userId.Value, groupId.Value);
+
+        if (ProfileDetails == null || groupMember == null)
         {
             return NotFound();
         }
@@ -84,31 +89,36 @@ public class PermissionsModel : PageModel
                 PageForCurrentUser = false;
             }
 
-            PermissionLevel = ProfileDetails.PermissionLevel;
+            PermissionLevel = groupMember.UserGroupPermissions;
         }
 
         return Page();
     }
 
-    public async Task<IActionResult> OnPostSaveAsync([FromQuery] long? userId)
+    public async Task<IActionResult> OnPostSaveAsync([FromQuery] long? groupId, [FromQuery] long? userId)
     {
-        if(userId == null)
+        if (User.Identity == null || !User.Identity.IsAuthenticated)
         {
-            return NotFound();
+            return RedirectToPage("~/Index");
         }
-        await userRepository.UpdateUserPermissionsAsync(userId.Value, PermissionLevel);
-        return RedirectToPage("Profile", new { userId = userId});
-    }
 
-    public async Task<IActionResult> OnPostSavePresetAsync([FromQuery] long? userId)
-    {
+        if (groupId == null)
+        {
+            return RedirectToPage("~/Index");
+        }
+
         if (userId == null)
         {
-            return NotFound();
+            return RedirectToPage("Details", new { groupId = groupId });
         }
 
-        await userRepository.UpdateUserPermissionsAsync(userId.Value, GeneratePermissionLevelFromPreset());
-        return RedirectToPage("Profile", new { userId = userId });
+        if (!await currentIdentityService.CurrentUserCanAccessGroupAsync(groupId.Value, PermissionLevel.EditGroupMembers))
+        {
+            return Unauthorized();
+        }
+
+        await userRepository.UpdateGroupMembershipPermissionsAsync(groupId.Value, userId.Value, PermissionLevel);
+        return RedirectToPage("Details", new { groupId = groupId });
     }
 
 
@@ -129,15 +139,6 @@ public class PermissionsModel : PageModel
             RoleSelectors.Clear();
         }
 
-        if (PresetRoles == null)
-        {
-            PresetRoles = new Dictionary<PermissionLevel, PermissionLevelSelector>();
-        }
-        else
-        {
-            PresetRoles.Clear();
-        }
-
         foreach (PermissionLevel role in Enum.GetValues(typeof(PermissionLevel)))
         {
             // Deliberately ignore standard access as that is the absence of permissions
@@ -150,12 +151,6 @@ public class PermissionsModel : PageModel
             if ((role & role - 1) == 0)
             {
                 RoleSelectors.Add(new PermissionLevelSelector(role));
-            }
-
-            // Deliberately omit writer roles to prevent users from setting dumb preset combinations
-            else if (!role.ToString().Contains("Write"))
-            {
-                PresetRoles.Add(role, new PermissionLevelSelector(role));
             }
         }
     }
@@ -183,19 +178,6 @@ public class PermissionsModel : PageModel
                 roleSelection.IsSelected = false;
             }
         }
-
-        // Set initial values for presets
-        foreach (PermissionLevelSelector roleSelection in PresetRoles.Values)
-        {
-            if (permissions.HasFlag(roleSelection.Role))
-            {
-                roleSelection.IsSelected = true;
-            }
-            else
-            {
-                roleSelection.IsSelected = false;
-            }
-        }
     }
 
 
@@ -206,22 +188,6 @@ public class PermissionsModel : PageModel
     {
         PermissionLevel calculatedRole = PermissionLevel.Authenticated;
         foreach (PermissionLevelSelector roleSelection in RoleSelectors)
-        {
-            if (roleSelection.IsSelected)
-            {
-                calculatedRole |= roleSelection.Role;
-            }
-        }
-        return calculatedRole;
-    }
-
-    /// <summary>
-    /// Applies the selected presents to the current state of the edit model. 
-    /// </summary>
-    public PermissionLevel GeneratePermissionLevelFromPreset()
-    {
-        PermissionLevel calculatedRole = PermissionLevel.Authenticated;
-        foreach (PermissionLevelSelector roleSelection in PresetRoles.Values)
         {
             if (roleSelection.IsSelected)
             {

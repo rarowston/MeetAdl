@@ -1,8 +1,8 @@
 @page
 @using MeetAdl.Permissions;
 @using MeetAdl.Security;
-@using MeetAdl.Pages.Profile;
-@model MeetAdl.Pages.Profile.PermissionsModel;
+@using MeetAdl.Pages.Profiles;
+@model MeetAdl.Pages.Profiles.PermissionsModel;
 @inject ICurrentIdentityService currentIdentityService;
 @{
     bool disablePermissionWrite = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.EditUserPermissions);

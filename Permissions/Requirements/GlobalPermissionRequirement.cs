@@ -1,6 +1,6 @@
 using MeetAdl.Permissions;
 using Microsoft.AspNetCore.Authorization;
-namespace MeetAdl.Security;
+namespace MeetAdl.Permissions.Requirements;
 public class GlobalPermissionRequirement : IAuthorizationRequirement
 {
     public PermissionLevel PermissionLevel { get; }

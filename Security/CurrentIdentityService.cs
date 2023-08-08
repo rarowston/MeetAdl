@@ -12,6 +12,7 @@ public class CurrentIdentityService : ICurrentIdentityService
 
     private Guid _objectId = Guid.Empty;
     private User? _user = null;
+    public GroupMember? _groupMember = null;
 
     public CurrentIdentityService(IHttpContextAccessor accessor, IUserRepository userRepository)
     {
@@ -51,6 +52,35 @@ public class CurrentIdentityService : ICurrentIdentityService
         return user.PermissionLevel.HasFlag(permission);
 
         //ALT: return (permission & user.PermissionLevel) == permission;
+    }
+
+    public async Task<bool> CurrentUserCanAccessGroupAsync(long groupId, PermissionLevel permissionLevel)
+    {
+        if(await CurrentUserHasPermissionLevelAsync(permissionLevel))
+        {
+            return true;
+        }
+
+        User? user = await GetCurrentUserInformationAsync();
+        if (user == null)
+        {
+            return false;
+        }
+
+        if(_groupMember == null)
+        {
+            // Get the membership record for the user in the group
+            _groupMember = await userRepository.GetUserAccessToGroupAsync(user.Id, groupId);
+        }
+
+        if(_groupMember == null)
+        {
+            return false;
+        }
+        else
+        {
+            return _groupMember.UserGroupPermissions.HasFlag(permissionLevel);
+        }
     }
 
     public async Task<User?> GetCurrentUserInformationAsync()

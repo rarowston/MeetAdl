@@ -1,5 +1,7 @@
 using MeetAdl.Configuration;
 using MeetAdl.Data;
+using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 using MeetAdl.Security;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -33,9 +35,16 @@ builder.Services.AddRazorPages()
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(configurationRoot.GetSection("AzureAd"));
 builder.Services.AddAuthorization();
+// builder.Services.AddAuthorization(options =>
+//     options.DefaultPolicy = new AuthorizationPolicyBuilder()
+//         .RequireAuthenticatedUser()
+//         .AddRequirements(new GlobalPermissionRequirement(PermissionLevel.GlobalAdmin))
+//         .Build()
+// );
 
 // Add our custom auth code. 
 builder.Services.AddScoped<IAuthorizationHandler, GlobalPermissionHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, GroupPermissionHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
 // Turn this on to allow for redirect URI override for devtunnels. 

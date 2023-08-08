@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Identity.Web;
 using System.Security.Claims;
 
-namespace MeetAdl.Pages.Profile;
+namespace MeetAdl.Pages.Profiles;
 
 public class ProfileModel : PageModel
 {

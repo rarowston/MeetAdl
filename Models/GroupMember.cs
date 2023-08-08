@@ -11,7 +11,7 @@ public class GroupMember
     /// <summary>
     /// Permissions scoped to this specific group for this specific user
     /// </summary>
-   // public PermissionLevel UserGroupPermissions { get; set; }
+    public PermissionLevel UserGroupPermissions { get; set; }
 
     public string? JoiningComments { get; set; }
 

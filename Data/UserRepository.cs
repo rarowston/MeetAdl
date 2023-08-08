@@ -28,6 +28,14 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<GroupMember?> GetUserAccessToGroupAsync(long userId, long groupId)
+    {
+        return await _dbContext.GroupMembers
+            .AsNoTracking()
+            .Where(membership => membership.UserId == userId && membership.GroupId == groupId)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<User?> GetUserFromObjectIdAsync(Guid objectId)
     {
         return await _dbContext.Users
@@ -42,6 +50,23 @@ public class UserRepository : IUserRepository
             .AsNoTracking()
             .Where(user => user.Id == userId)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> UpdateGroupMembershipPermissionsAsync(long groupId, long userId, PermissionLevel permissionLevel)
+    {
+        GroupMember? groupMember = await _dbContext.GroupMembers
+            .Where(membership => membership.UserId == userId && membership.GroupId == groupId)
+            .FirstOrDefaultAsync();
+        if(groupMember == null)
+        {
+            return false;
+        }
+        else
+        {
+            groupMember.UserGroupPermissions = permissionLevel;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 
     public async Task<bool> UpdateUserEmailAsync(long userId, string email)

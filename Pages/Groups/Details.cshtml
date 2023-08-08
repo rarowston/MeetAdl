@@ -1,6 +1,19 @@
 ﻿@page
 @using MeetAdl.Models;
+@using MeetAdl.Permissions;
+@using MeetAdl.Security;
 @model MeetAdl.Pages.Groups.DetailsModel
+@inject ICurrentIdentityService currentIdentityService;
+@{
+    bool disableMemberPermissionRead = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.ReadGroupMembers);
+    bool disableMemberPermissionEdit = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.EditGroupMembers);
+    bool disableEventCreate = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.EditGroupEvents);
+    bool disableEventEdit = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.EditGroupEvents);
+    bool disableGroupUpdate = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.EditGroupDetails);
+    bool disablePostCreate = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.CreateGroupPosts);
+    bool disablePostEdit = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.EditGroupPosts);
+    bool disablePostDelete = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.DeleteGroupPosts);
+}
 @{
     ViewData["Title"] = "MeetAdl - " + Model.GroupDetails!.Name;
     string eventNameWidth = "w-75";
@@ -11,10 +24,13 @@
     <h1 class="px-4 my-1">
         @Model.GroupDetails.Name
     </h1>
-    <a class="btn btn-primary mx-1 my-2" asp-page="./Update" asp-route-groupId="@Model.GroupDetails.Id">
-        <i class="bi bi-pen"></i>
-    </a>
 
+    @if (!disableGroupUpdate)
+    {
+        <a class="btn btn-primary mx-1 my-2" asp-page="./Update" asp-route-groupId="@Model.GroupDetails.Id">
+            <i class="bi bi-pen"></i>
+        </a>
+    }
     @* Switch between join or leave group. *@
     @if (Model.UserIsAlreadyMember)
     {
@@ -39,9 +55,12 @@
     <div class="card d-flex flex-column p-2 w-25 mw-10">
         <div class="d-flex flex-row flex-wrap mb-2">
             <h2 class="my-1 card-title">Events</h2>
-            <a class="btn btn-primary p-2 ms-auto" asp-page="./Events/Create" asp-route-groupId="@Model.GroupDetails.Id">
-                <i class="bi bi-calendar-event"></i> Create an event
-            </a>
+            @if (!disableEventCreate)
+            {
+                <a class="btn btn-primary p-2 ms-auto" asp-page="./Events/Create" asp-route-groupId="@Model.GroupDetails.Id">
+                    <i class="bi bi-calendar-event"></i> Create an event
+                </a>
+            }
         </div>
         @if (Model.GroupDetails?.MeetupEvents != null && Model.GroupDetails.MeetupEvents.Any())
         {
@@ -50,9 +69,12 @@
                 <div class="d-flex flex-row flex-wrap p-1 m-1 my-2">
                     <a class="@eventNameWidth" asp-page="./Events/Details" asp-route-groupId="@Model.GroupDetails.Id" asp-route-eventId="@meetup.Id">@meetup.Name at @meetup.Location</a>
 
-                    <a class="btn btn-primary mx-1 ms-auto" asp-page="./Events/Update" asp-route-groupId="@Model.GroupDetails.Id" asp-route-eventId="@meetup.Id">
-                        <i class="bi bi-pen"></i>
-                    </a>
+                    @if (!disableEventEdit)
+                    {
+                        <a class="btn btn-primary mx-1 ms-auto" asp-page="./Events/Update" asp-route-groupId="@Model.GroupDetails.Id" asp-route-eventId="@meetup.Id">
+                            <i class="bi bi-pen"></i>
+                        </a>
+                    }
                 </div>
             }
         }
@@ -65,9 +87,12 @@
     <div class="d-flex flex-column px-4 py-2 w-50 mw-20">
         <div class="d-flex flex-row flex-wrap mb-2">
             <h2 class="my-1">Posts</h2>
-            <a class="btn btn-primary p-2 mx-4" asp-page="./Posts/Create" asp-route-groupId="@Model.GroupDetails?.Id">
-                <i class="bi bi-plus"></i> Make Post
-            </a>
+            @if (!disablePostCreate)
+            {
+                <a class="btn btn-primary p-2 mx-4" asp-page="./Posts/Create" asp-route-groupId="@Model.GroupDetails?.Id">
+                    <i class="bi bi-plus"></i> Make Post
+                </a>
+            }
         </div>
         @{
             if (Model.GroupDetails?.Posts != null)
@@ -80,14 +105,20 @@
                             <div>@post.Text</div>
                         </div>
                         <div class="d-flex flex-row p-2 mx-3 ms-auto">
-                            <a class="btn btn-primary mx-1" asp-page="./Posts/Update" asp-route-groupId="@Model.GroupDetails.Id" asp-route-postId="@post.Id">
-                                <i class="bi bi-pen"></i>
-                            </a>
-                            <form method="post">
-                                <button class="btn btn-danger mx-1" asp-page-handler="DeletePost" asp-route-groupId="@Model.GroupDetails.Id" asp-route-postId="@post.Id" onclick="return confirm('Are you sure that you want to delete this? This cannot be undone')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            @if (!disablePostEdit)
+                            {
+                                <a class="btn btn-primary mx-1" asp-page="./Posts/Update" asp-route-groupId="@Model.GroupDetails.Id" asp-route-postId="@post.Id">
+                                    <i class="bi bi-pen"></i>
+                                </a>
+                            }
+                            @if (!disablePostDelete)
+                            {
+                                <form method="post">
+                                    <button class="btn btn-danger mx-1" asp-page-handler="DeletePost" asp-route-groupId="@Model.GroupDetails.Id" asp-route-postId="@post.Id" onclick="return confirm('Are you sure that you want to delete this? This cannot be undone')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </div>
                 }
@@ -127,19 +158,27 @@
 
                             <div class="@userNameWidth">
                                 <p class="fw-bold">@member.User.DisplayName</p>
-                                @if (!string.IsNullOrWhiteSpace(member.JoiningComments))
+                                @if (!string.IsNullOrWhiteSpace(member.JoiningComments) && !disableMemberPermissionRead)
                                 {
                                     <span>I joined because:</span>
                                     <p class="small">@member.JoiningComments</p>
                                 }
                             </div>
-                            <div class="d-flex flex-row ms-auto">
-                                <form method="post">
-                                    <button class="btn btn-danger mx-1" asp-page-handler="DeleteMember" asp-route-groupId="@Model.GroupDetails.Id" asp-route-userId="@member.UserId" onclick="return confirm('Are you sure that you want to remove this member?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-
+                            <div class="d-flex flex-column ms-auto">
+                                @if (!disableMemberPermissionRead)
+                                {
+                                    <a class="btn btn-primary mx-1" asp-page="Membership" asp-route-groupId="@Model.GroupDetails.Id" asp-route-userId="@member.User.Id">
+                                        <i class="bi bi-pen"></i>
+                                    </a>
+                                }
+                                @if (!disableMemberPermissionEdit)
+                                {
+                                    <form method="post">
+                                        <button class="btn btn-danger mx-1" asp-page-handler="DeleteMember" asp-route-groupId="@Model.GroupDetails.Id" asp-route-userId="@member.UserId" onclick="return confirm('Are you sure that you want to remove this member?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
                             </div>
                         </div>
 

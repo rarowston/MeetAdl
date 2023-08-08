@@ -21,5 +21,8 @@ public interface ICurrentIdentityService
     /// <param name="permission">The permission bit(s) to validate</param>
     /// <returns>True if the user has all of the permission bits sent, false otherwise</returns>
     public Task<bool> CurrentUserHasPermissionLevelAsync(PermissionLevel permission);
+
+
+    public Task<bool> CurrentUserCanAccessGroupAsync(long groupId, PermissionLevel permissionLevel);
 }
 
