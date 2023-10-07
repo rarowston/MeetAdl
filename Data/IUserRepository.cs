@@ -12,4 +12,5 @@ public interface IUserRepository
     public Task<bool> UpdateGroupMembershipPermissionsAsync(long groupId, long userId, PermissionLevel permissionLevel);
     public Task<bool> UpdateUserEmailAsync(long userId, string email);
     public Task<bool> UpdateUserPermissionsAsync(long userId, PermissionLevel permissionLevel);
+    public Task<List<User>> GetAllUsersAsync();
 }

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using MeetAdl.Data;
 using MeetAdl.Models;
 using MeetAdl.Security;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MeetAdl.Pages.Groups
 {
+    [Authorize]
     public class JoinModel : PageModel
     {
         private readonly IGroupRepository groupRepository;

@@ -35,12 +35,6 @@ builder.Services.AddRazorPages()
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(configurationRoot.GetSection("AzureAd"));
 builder.Services.AddAuthorization();
-// builder.Services.AddAuthorization(options =>
-//     options.DefaultPolicy = new AuthorizationPolicyBuilder()
-//         .RequireAuthenticatedUser()
-//         .AddRequirements(new GlobalPermissionRequirement(PermissionLevel.GlobalAdmin))
-//         .Build()
-// );
 
 // Add our custom auth code. 
 builder.Services.AddScoped<IAuthorizationHandler, GlobalPermissionHandler>();

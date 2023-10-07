@@ -2,14 +2,14 @@
 using MeetAdl.Data;
 using MeetAdl.Models;
 using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 using MeetAdl.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace MeetAdl.Pages.Profiles;
+
+[AuthorizeForGlobalPermissionLevel(PermissionLevel.ReadUserPermissions)]
 public class PermissionsModel : PageModel
 {
     private readonly ICurrentIdentityService currentIdentityService;
@@ -92,12 +92,20 @@ public class PermissionsModel : PageModel
 
     public async Task<IActionResult> OnPostSaveAsync([FromQuery] long? userId)
     {
-        if(userId == null)
+        if (userId == null)
         {
             return NotFound();
         }
-        await userRepository.UpdateUserPermissionsAsync(userId.Value, PermissionLevel);
-        return RedirectToPage("Profile", new { userId = userId});
+        if (await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.EditUserPermissions))
+        {
+            await userRepository.UpdateUserPermissionsAsync(userId.Value, PermissionLevel);
+
+            return RedirectToPage("Profile", new { userId = userId });
+        }
+        else
+        {
+            return Unauthorized();
+        }
     }
 
     public async Task<IActionResult> OnPostSavePresetAsync([FromQuery] long? userId)
@@ -106,9 +114,15 @@ public class PermissionsModel : PageModel
         {
             return NotFound();
         }
-
-        await userRepository.UpdateUserPermissionsAsync(userId.Value, GeneratePermissionLevelFromPreset());
-        return RedirectToPage("Profile", new { userId = userId });
+        if (await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.EditUserPermissions))
+        {
+            await userRepository.UpdateUserPermissionsAsync(userId.Value, GeneratePermissionLevelFromPreset());
+            return RedirectToPage("Profile", new { userId = userId });
+        }
+        else
+        {
+            return Unauthorized();
+        }
     }
 
 

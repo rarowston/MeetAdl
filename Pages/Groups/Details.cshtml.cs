@@ -50,7 +50,7 @@ public class DetailsModel : PageModel
 
     public async Task<IActionResult> OnPostDeletePostAsync([FromQuery] long groupId, [FromQuery] long postId)
     {
-        if (!await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.DeleteGroupPosts))
+        if (!await currentIdentityService.CurrentUserCanAccessGroupAsync(groupId, PermissionLevel.DeleteGroupPosts))
         {
             return Unauthorized();
         }

@@ -1,11 +1,13 @@
 using MeetAdl.Data;
 using MeetAdl.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
 namespace MeetAdl.Pages.Groups;
 
+[Authorize]
 public class CreateModel : PageModel
 {
     private readonly IGroupRepository groupRepository;

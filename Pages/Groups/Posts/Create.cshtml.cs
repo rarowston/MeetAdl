@@ -9,7 +9,7 @@ using MeetAdl.Permissions.Requirements;
 
 namespace MeetAdl.Pages.Groups.Posts
 {
-    [AuthorizeForGlobalPermissionLevel(PermissionLevel.CreateGroupPosts)]
+    [AuthorizeForGroupAccess(PermissionLevel.CreateGroupPosts)]
     public class CreateModel : PageModel
     {
         private readonly IGroupRepository groupRepository;

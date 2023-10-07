@@ -28,6 +28,11 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _dbContext.Users.ToListAsync();
+    }
+
     public async Task<GroupMember?> GetUserAccessToGroupAsync(long userId, long groupId)
     {
         return await _dbContext.GroupMembers
