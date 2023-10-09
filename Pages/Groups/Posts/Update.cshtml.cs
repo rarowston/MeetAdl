@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using MeetAdl.Data;
 using MeetAdl.Models;
 using System.ComponentModel.DataAnnotations;
+using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 
 namespace MeetAdl.Pages.Groups.Posts
 {
+    [AuthorizeForGlobalPermissionLevel(PermissionLevel.EditGroupPosts)]
     public class UpdateModel : PageModel
     {
         private readonly IGroupRepository groupRepository;

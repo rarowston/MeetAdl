@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using MeetAdl.Permissions;
+@using MeetAdl.Security;
+
+@inject ICurrentIdentityService currentIdentityService;
+@{
+    bool disableUserRead = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.ReadUserDetails);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,6 +34,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Groups/Index">Groups</a>
                         </li>
+                        @if (!disableUserRead)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Profiles/List">Users</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

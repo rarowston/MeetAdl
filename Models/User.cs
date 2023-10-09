@@ -1,3 +1,4 @@
+using MeetAdl.Permissions;
 using System.ComponentModel.DataAnnotations;
 
 namespace MeetAdl.Models;
@@ -13,7 +14,7 @@ public class User
 
     public Guid ObjectId { get; set; }
 
-    //public PermissionLevel PermissionLevel { get; set; }
+    public PermissionLevel PermissionLevel { get; set; }
 
     public bool IsActive { get; set; } = true;
 

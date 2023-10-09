@@ -1,0 +1,66 @@
+@page
+@using MeetAdl.Permissions;
+@using MeetAdl.Security;
+@model MeetAdl.Pages.Groups.MembershipModel;
+@inject ICurrentIdentityService currentIdentityService;
+@{
+    bool disablePermissionWrite = !await currentIdentityService.CurrentUserCanAccessGroupAsync(Model.GroupDetails!.Id, PermissionLevel.EditGroupMembers);
+}
+
+<h1>Modify Permissions for @Model.ProfileDetails?.DisplayName in @Model.GroupDetails!.Name</h1>
+
+<form method="post">
+    <div class="permission-display">
+        @* Razor disabled attribute will automatically remove the attribute from the created page when being used, so we can use it like this here.*@
+        <fieldset disabled=@disablePermissionWrite>
+            <div class="d-flex flex-wrap flex-row pt-2">
+                <div class="d-flex flex-wrap flex-column card p-3 w-25e">
+                    <div class="config-level p-2">
+                        <b>Group Permissions</b>
+                    </div>
+                    @for (int i = 0; i < Model.RoleSelectors.Count; i++)
+                    {
+                        // Only display Group permissions (permissions that are between 0 and up to config admin)
+                        if (Model.RoleSelectors[i].Role > 0 && Model.RoleSelectors[i].Role < PermissionLevel.GroupAdministrate)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input asp-for="@Model.RoleSelectors[i].IsSelected" class="custom-control-input">
+                                <input type="hidden" asp-for="RoleSelectors[i].Role" class="custom-control-input">
+                                <input type="hidden" asp-for="RoleSelectors[i].Name" class="custom-control-input">
+                                <label asp-for="@Model.RoleSelectors[i].IsSelected" class="custom-control-label"> @Model.RoleSelectors[i].Name </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="d-flex flex-row flex-wrap">
+            <a class="btn btn-secondary p-2 m-2" asp-page="Details" asp-route-groupId="@Model.GroupDetails?.Id">Cancel Changes</a>
+            <input disabled=@disablePermissionWrite type="submit" asp-route-userId="@Model.ProfileDetails?.Id" asp-route-groupId="@Model.GroupDetails?.Id" asp-page-handler="Save" value="Update Permissions" class="btn btn-primary p-2 m-2" />
+        </div>
+    </div>
+</form>
+
+<style>
+    .card label.custom-control-label {
+        font-weight: normal;
+        padding: 0.1rem;
+    }
+
+    .card {
+        margin: 0.5rem;
+    }
+</style>
+
+@* js code to set the button to plue if a preset is changed*@
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+
+    $('#permission-presets input').change(highlightPresetButton);
+
+    function highlightPresetButton(){
+        $("#apply-preset-btn").removeClass("btn-secondary")
+        $("#apply-preset-btn").addClass("btn-success")
+    }
+</script>

@@ -1,0 +1,153 @@
+@page
+@using MeetAdl.Permissions;
+@using MeetAdl.Security;
+@using MeetAdl.Pages.Profiles;
+@model MeetAdl.Pages.Profiles.PermissionsModel;
+@inject ICurrentIdentityService currentIdentityService;
+@{
+    bool disablePermissionWrite = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.EditUserPermissions);
+}
+
+<h1>Modify Permissions for @Model.ProfileDetails?.DisplayName</h1>
+
+<form method="post">
+    <div class="permission-display">
+        @* Razor disabled attribute will automatically remove the attribute from the created page when being used, so we can use it like this here.*@
+        <fieldset disabled=@disablePermissionWrite>
+            <h4>Permission Presets</h4>
+            @* Display All of the permission presets categorised using cards*@
+            <div id="permission-presets" class="d-flex flex-wrap flex-row">
+                <div class="d-flex flex-nowrap flex-column card p-3 w-15e">
+                    <p class="d-flex flex-nowrap font-weight-bold px-3 py-1">Group Access Presets</p>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.GroupRead].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupRead].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupRead].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.GroupRead].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.GroupRead].Name </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.GroupEdit].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupEdit].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupEdit].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.GroupEdit].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.GroupEdit].Name </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.GroupAdvancedEdit].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupAdvancedEdit].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupAdvancedEdit].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.GroupAdvancedEdit].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.GroupAdvancedEdit].Name </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.GroupAdministrate].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupAdministrate].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GroupAdministrate].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.GroupAdministrate].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.GroupAdministrate].Name </label>
+                    </div>
+                </div>
+                <div class="d-flex flex-nowrap flex-column card p-3 w-15e">
+                    <p class="d-flex flex-nowrap font-weight-bold px-3 py-1">User Presets</p>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.UserRead].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.UserRead].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.UserRead].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.UserRead].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.UserRead].Name </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.UserEdit].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.UserEdit].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.UserEdit].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.UserEdit].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.UserEdit].Name </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.UserAdministrate].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.UserAdministrate].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.UserAdministrate].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.UserAdministrate].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.UserAdministrate].Name </label>
+                    </div>
+                </div>
+                <div class="d-flex flex-nowrap flex-column card p-3 w-15e">
+                    <p class="d-flex flex-nowrap font-weight-bold px-3 py-1">Global Access Presets</p>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.GlobalRead].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GlobalRead].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GlobalRead].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.GlobalRead].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.GlobalRead].Name </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="PresetRoles[PermissionLevel.GlobalAdmin].IsSelected" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GlobalAdmin].Role" class="custom-control-input">
+                        <input type="hidden" asp-for="PresetRoles[PermissionLevel.GlobalAdmin].Name" class="custom-control-input">
+                        <label asp-for="@Model.PresetRoles[PermissionLevel.GlobalAdmin].IsSelected" class="custom-control-label"> @Model.PresetRoles[PermissionLevel.GlobalAdmin].Name </label>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" id="apply-preset-btn" asp-page-handler="SavePreset" asp-route-userId="@Model.ProfileDetails?.Id" value="Apply Selected Presets" class="btn btn-secondary align-self-end p-2 m-2" />
+            <div class="d-flex flex-wrap flex-row pt-2">
+                <div class="d-flex flex-wrap flex-column card p-3 w-25e">
+                    <div class="config-level p-2">
+                        <b>Group Permission Levels</b>
+                    </div>
+                    @for (int i = 0; i < Model.RoleSelectors.Count; i++)
+                    {
+                        // Only display Group permissions (permissions that are between 0 and up to config admin)
+                        if (Model.RoleSelectors[i].Role > 0 && Model.RoleSelectors[i].Role < PermissionLevel.GroupAdministrate)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input asp-for="@Model.RoleSelectors[i].IsSelected" class="custom-control-input">
+                                <input type="hidden" asp-for="RoleSelectors[i].Role" class="custom-control-input">
+                                <input type="hidden" asp-for="RoleSelectors[i].Name" class="custom-control-input">
+                                <label asp-for="@Model.RoleSelectors[i].IsSelected" class="custom-control-label"> @Model.RoleSelectors[i].Name </label>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="d-flex flex-wrap flex-column card p-3 w-25e">
+                    <div class="config-level p-2">
+                        <b>User Permission Levels</b>
+                    </div>
+                    @for (int i = 0; i < Model.RoleSelectors.Count; i++)
+                    {
+                        // Only display Access Manager permissions (permissions that are between Config Admin and up to Access Manager admin)
+                        if (Model.RoleSelectors[i].Role > PermissionLevel.GroupAdministrate && Model.RoleSelectors[i].Role < PermissionLevel.GlobalAdmin)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input asp-for="@Model.RoleSelectors[i].IsSelected" class="custom-control-input">
+                                <input type="hidden" asp-for="RoleSelectors[i].Role" class="custom-control-input">
+                                <input type="hidden" asp-for="RoleSelectors[i].Name" class="custom-control-input">
+                                <label asp-for="@Model.RoleSelectors[i].IsSelected" class="custom-control-label"> @Model.RoleSelectors[i].Name </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="d-flex flex-row flex-wrap">
+            <a class="btn btn-secondary p-2 m-2" asp-page="Profile" asp-route-userId="@Model.ProfileDetails?.Id">Back to Profile</a>
+            <input disabled=@disablePermissionWrite type="submit" asp-route-userId="@Model.ProfileDetails?.Id" asp-page-handler="Save" value="Update Permissions" class="btn btn-primary p-2 m-2" />
+        </div>
+    </div>
+</form>
+
+<style>
+    .card label.custom-control-label {
+        font-weight: normal;
+        padding: 0.1rem;
+    }
+
+    .card {
+        margin: 0.5rem;
+    }
+</style>
+
+@* js code to set the button to plue if a preset is changed*@
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+
+    $('#permission-presets input').change(highlightPresetButton);
+
+    function highlightPresetButton(){
+        $("#apply-preset-btn").removeClass("btn-secondary")
+        $("#apply-preset-btn").addClass("btn-success")
+    }
+</script>

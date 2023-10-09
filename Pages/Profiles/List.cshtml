@@ -1,0 +1,26 @@
+﻿@page
+@using MeetAdl.Models;
+@using MeetAdl.Pages.Profiles;
+@using MeetAdl.Permissions;
+@using MeetAdl.Security;
+@model MeetAdl.Pages.Profiles.ListModel
+@inject ICurrentIdentityService currentIdentityService;
+@{
+    bool disablePermissionRead = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.ReadUserPermissions);
+}
+@{
+    ViewData["Title"] = "MeetAdl - Users";
+}
+<h1>All Users</h1>
+
+@foreach(User u in Model.Users)
+{
+    <div class="card">
+        <a asp-page="Profile" asp-route-userId="@u.Id">@u.DisplayName</a>
+        <p>@u.Email</p>
+        @if (!disablePermissionRead)
+        {
+            <p>@u.PermissionLevel</p>
+        }
+    </div>
+}

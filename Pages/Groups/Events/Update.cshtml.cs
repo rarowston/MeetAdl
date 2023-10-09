@@ -1,11 +1,14 @@
 using MeetAdl.Data;
 using MeetAdl.Models;
+using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
 namespace MeetAdl.Pages.Groups.Events
 {
+    [AuthorizeForGroupAccess(PermissionLevel.EditGroupEvents)]
     public class UpdateModel : PageModel
     {
         private readonly IEventRepository eventRepository;

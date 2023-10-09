@@ -1,4 +1,5 @@
 using MeetAdl.Models;
+using MeetAdl.Permissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MeetAdl.Data;
@@ -27,6 +28,19 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _dbContext.Users.ToListAsync();
+    }
+
+    public async Task<GroupMember?> GetUserAccessToGroupAsync(long userId, long groupId)
+    {
+        return await _dbContext.GroupMembers
+            .AsNoTracking()
+            .Where(membership => membership.UserId == userId && membership.GroupId == groupId)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<User?> GetUserFromObjectIdAsync(Guid objectId)
     {
         return await _dbContext.Users
@@ -43,6 +57,23 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<bool> UpdateGroupMembershipPermissionsAsync(long groupId, long userId, PermissionLevel permissionLevel)
+    {
+        GroupMember? groupMember = await _dbContext.GroupMembers
+            .Where(membership => membership.UserId == userId && membership.GroupId == groupId)
+            .FirstOrDefaultAsync();
+        if(groupMember == null)
+        {
+            return false;
+        }
+        else
+        {
+            groupMember.UserGroupPermissions = permissionLevel;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+    }
+
     public async Task<bool> UpdateUserEmailAsync(long userId, string email)
     {
         User? user = await _dbContext.Users
@@ -53,6 +84,20 @@ public class UserRepository : IUserRepository
             return false;
         }
         user.Email = email;
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> UpdateUserPermissionsAsync(long userId, PermissionLevel permissionLevel)
+    {
+        User? user = await _dbContext.Users
+            .Where(user => user.Id == userId)
+            .FirstOrDefaultAsync();
+        if (user == null)
+        {
+            return false;
+        }
+        user.PermissionLevel = permissionLevel;
         await _dbContext.SaveChangesAsync();
         return true;
     }

@@ -1,11 +1,14 @@
 using MeetAdl.Data;
 using MeetAdl.Models;
+using MeetAdl.Permissions;
+using MeetAdl.Permissions.Requirements;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
 namespace MeetAdl.Pages.Groups.Events
 {
+    [AuthorizeForGroupAccess(PermissionLevel.EditGroupEvents)]
     public class CreateModel : PageModel
     {
         private readonly IGroupRepository groupRepository;
@@ -14,14 +17,14 @@ namespace MeetAdl.Pages.Groups.Events
         public Group? GroupSummary;
 
         [BindProperty]
-        [Required, MinLength(5)]
+        [Required, MinLength(2)]
         public string? EventName { get; set; }
 
         [BindProperty]
         public string? EventDescription { get; set; }
 
         [BindProperty]
-        [Required, MinLength(5)]
+        [Required, MinLength(2)]
         public string? EventLocation { get; set; }
 
         [BindProperty]
