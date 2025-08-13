@@ -1,5 +1,6 @@
 using MeetAdl.Data;
 using MeetAdl.Models;
+using MeetAdl.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,7 +12,8 @@ namespace MeetAdl.Pages.Groups;
 public class CreateModel : PageModel
 {
     private readonly IGroupRepository groupRepository;
-
+    private readonly IUserRepository userRepository;
+    private readonly ICurrentIdentityService currentIdentityService;
 
     [BindProperty]
     [Required, MinLength(5)]
@@ -21,9 +23,11 @@ public class CreateModel : PageModel
     [Required, MinLength(5)]
     public string? GroupDescription { get; set; }
 
-    public CreateModel(IGroupRepository groupRepository)
+    public CreateModel(IGroupRepository groupRepository, IUserRepository userRepository, ICurrentIdentityService currentIdentityService)
     {
         this.groupRepository = groupRepository;
+        this.userRepository = userRepository;
+        this.currentIdentityService = currentIdentityService;
     }
 
     public IActionResult OnGet()
@@ -38,8 +42,15 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        Group group = await groupRepository.CreateGroupAsync(GroupName, GroupDescription);
+        User? user = await currentIdentityService.GetCurrentUserInformationAsync();
+        if (user is null) {
+            return Forbid();
+        }
 
+        Group group = await groupRepository.CreateGroupAsync(GroupName, GroupDescription);
+        await groupRepository.AddOrUpdateUserMembershipForGroupAsync(group.Id, user.Id, "Founder");
+        bool success = await userRepository.UpdateGroupMembershipPermissionsAsync(group.Id, user.Id, Permissions.PermissionLevel.GroupAdministrate);
+        
         return RedirectToPage("./details", new { groupId = group.Id });
 
     }

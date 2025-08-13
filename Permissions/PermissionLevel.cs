@@ -25,28 +25,30 @@ public enum PermissionLevel : long // Ensure that the enum is 64 bits by making 
     ReadUserPermissions = ((long)1) << 34,
     EditUserPermissions = ((long)1) << 35,
 
-    GroupRead = 
+    GroupRead =
         ReadGroupDetails |
         ReadGroupEvents |
         ReadGroupMembers,
 
-    GroupEdit = 
-        EditGroupDetails | 
-        EditGroupEvents | 
+    GroupEdit =
+        CreateGroupPosts |
+        EditGroupPosts |
+        EditGroupDetails |
+        EditGroupEvents |
         EditGroupPosts |
         EditGroupMembers,
 
-    GroupAdvancedEdit = 
+    GroupAdvancedEdit =
         GroupEdit |
         CancelGroupEvents |
         DeleteGroupPosts,
 
     GroupAdministrate =
-        GroupRead | 
+        GroupRead |
         GroupAdvancedEdit |
         DeleteGroups,
 
-    UserRead = 
+    UserRead =
         ReadUserDetails |
         ReadUserPermissions,
 
@@ -54,11 +56,11 @@ public enum PermissionLevel : long // Ensure that the enum is 64 bits by making 
         EditUserDetails |
         EditUserPermissions,
 
-    UserAdministrate = 
+    UserAdministrate =
         UserRead |
         UserEdit,
 
-    GlobalRead = 
+    GlobalRead =
         UserRead |
         GroupRead,
 

@@ -24,7 +24,7 @@
         <label asp-for="JoinMessage" class="control-label">(optional) Why would you like to join this group?</label>
         <input asp-for="JoinMessage" class="form-control" />
         <span asp-validation-for="JoinMessage" class="text-danger"></span>
-        <a class="btn btn-danger p-2 m-2" asp-page="../Details" asp-route-groupId="@Model.Group?.Id">Cancel</a>
+        <a class="btn btn-danger p-2 m-2" asp-page="./Details" asp-route-groupId="@Model.Group?.Id">Cancel</a>
         <input type="submit" asp-route-groupId="@Model.Group?.Id" value="Join" class="btn btn-primary p-2 m-2" />
     }
 </form>
