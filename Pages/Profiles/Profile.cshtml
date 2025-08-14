@@ -6,6 +6,8 @@
 @inject ICurrentIdentityService currentIdentityService;
 @{
     bool disablePermissionRead = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.ReadUserPermissions);
+    bool disablePermissionUpdate = !await currentIdentityService.CurrentUserHasPermissionLevelAsync(PermissionLevel.EditUserPermissions);
+    string linkText = disablePermissionUpdate? "View Permissions": "Update Permissions";
 }
 @{
     ViewData["Title"] = "MeetAdl - Profile";
